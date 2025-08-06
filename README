@@ -1,0 +1,58 @@
+# Labor Market Analysis — U.S. Unemployment Rate
+
+## Cel projektu
+
+Celem projektu jest analiza i wizualizacja stopy bezrobocia w Stanach Zjednoczonych na podstawie danych historycznych pobranych z Federal Reserve Economic Data (FRED).  
+Projekt obejmuje eksplorację danych, identyfikację rozkładu i trendów czasowych, a także zbadanie związku stopy bezrobocia z dwoma kluczowymi makroekonomicznymi wskaźnikami: PKB (GDP) oraz inflacją (CPI).
+
+---
+
+## Użyte technologie
+
+- Python  
+- Biblioteki: pandas, seaborn, matplotlib, statsmodels, fredapi  
+- Źródło danych: FRED API  
+
+---
+
+## Przebieg analizy
+
+- Pobranie danych dotyczących stopy bezrobocia, PKB oraz inflacji.  
+- Wizualizacja rozkładu stopy bezrobocia (histogram, boxplot).  
+- Identyfikacja wartości odstających w stopie bezrobocia.  
+- Analiza trendów czasowych i wyliczenie średniej ruchomej (rolling mean).  
+- Obliczenie korelacji między stopą bezrobocia, PKB i inflacją.  
+- Budowa modelu regresji liniowej sprawdzającego, czy PKB i inflacja przewidują poziom bezrobocia.
+
+---
+
+## Wnioski
+
+- Stopa bezrobocia w USA wykazuje wyraźne trendy i sezonowość, co widać na wykresach czasowych i średniej ruchomej.  
+- Występują wartości odstające, które mogą odpowiadać okresom kryzysów ekonomicznych (np. recesje).  
+- Analiza korelacji pokazuje istotne powiązania między bezrobociem, PKB i inflacją.  
+- Model regresji liniowej wskazuje, że zarówno PKB, jak i inflacja mają statystycznie istotny wpływ na stopę bezrobocia, choć model nie wyjaśnia całkowicie zmienności bezrobocia.  
+- Projekt potwierdza złożony charakter rynku pracy i jego zależności od innych wskaźników makroekonomicznych.
+
+---
+
+## Instrukcje użytkowania
+
+1. Uzyskaj własny klucz API z [FRED](https://fred.stlouisfed.org/docs/api/api_key.html).  
+2. Ustaw klucz w zmiennej środowiskowej `FRED_API_KEY`, np.:  
+   - na Linux/MacOS:  
+     ```bash
+     export FRED_API_KEY='twój_klucz_api'
+     ```  
+   - na Windows (PowerShell):  
+     ```powershell
+     setx FRED_API_KEY "twój_klucz_api"
+     ```  
+3. Uruchom skrypt Python lub notebook Jupyter z tego repozytorium.  
+4. Ciesz się analizą i wizualizacjami!
+
+---
+
+## Licencja
+
+Projekt dostępny na licencji MIT.
