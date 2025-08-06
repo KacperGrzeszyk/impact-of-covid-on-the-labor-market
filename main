@@ -1,0 +1,80 @@
+import seaborn as sns
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import plotly.express as px
+from fredapi import Fred
+import time
+from pandas.plotting import autocorrelation_plot
+import statsmodels.api as sm
+
+fred_key='****'
+fred = Fred(api_key=fred_key)
+
+unemp_series = fred.get_series('UNRATE')
+df = pd.DataFrame(unemp_series,columns=['Unemployment Rate'])
+df.reset_index(inplace=True)
+df.rename(columns={'index':'Date'}, inplace=True)
+
+#print(df.describe())
+
+plt.figure(figsize=(8,5))
+sns.histplot(df['Unemployment Rate'], bins=20,kde=True)
+plt.title("Distribution of the unemployment rate in the USA")
+plt.xlabel("Unemployment rate (%)")
+plt.ylabel("Number of months")
+plt.show()
+
+plt.figure(figsize=(6,4))
+sns.boxplot(x=df['Unemployment Rate'])
+plt.title("Box plot for unemployment rate")
+plt.show()
+
+q1=df['Unemployment Rate'].quantile(0.25)
+q3=df['Unemployment Rate'].quantile(0.75)
+iqr= q3 - q1
+lower_bound = q1 - 1.5*iqr
+upper_bound = q3 + 1.5*iqr
+outliers = df[(df['Unemployment Rate'] < lower_bound) | (df['Unemployment Rate'] > upper_bound)]
+
+plt.figure(figsize=(12,5))
+plt.plot(df['Date'],df['Unemployment Rate'],label='Unemployment Rate')
+plt.xlabel("Year")
+plt.ylabel("Unemployment rate %")
+plt.title("U.S. Unemployment Rate Trend")
+plt.legend()
+plt.show()
+
+autocorrelation_plot(df['Unemployment Rate'])
+plt.show()
+
+df['Rolling Mean'] = df['Unemployment Rate'].rolling(window=12).mean()
+
+plt.figure(figsize=(10,5))
+plt.plot(df['Date'], df['Unemployment Rate'], label='Actual Data', alpha=0.5)
+plt.plot(df['Date'], df['Rolling Mean'], label='Rolling Mean (12 months)', color='red')
+plt.legend()
+plt.title('Trend w stopie bezrobocia')
+plt.show()
+
+gdp_series = fred.get_series('GDP')
+cpi_series = fred.get_series('CPIAUCSL')
+
+df_gdp= pd.DataFrame(gdp_series,columns=['GDP'])
+df_cpi= pd.DataFrame(cpi_series,columns=['Inflation'])
+
+df_combined = df.merge(df_gdp,left_on='Date', right_index=True,how='left')
+df_combined = df_combined.merge(df_cpi,left_on='Date', right_index=True,how='left')
+print(df_combined.corr())
+
+sns.pairplot(df_combined)
+plt.show()
+df_combined.dropna(subset=['GDP', 'Inflation'], inplace=True)
+#Model regresji czy pkb i inflacja przewiduja bezrobocie ?
+X = df_combined[['GDP', 'Inflation']]
+X = sm.add_constant(X)  # Dodanie wyrazu wolnego
+y = df_combined['Unemployment Rate']
+
+model = sm.OLS(y, X).fit()
+print(model.summary())
+df_combined.to_csv('labor_market_analysis.csv', index=False)
